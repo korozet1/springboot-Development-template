@@ -1,0 +1,44 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /project
+
+  ############################开启文件压缩##########################
+compression:
+    enabled: true
+    mime-types: text/html, text/xml, text/plain,text/css, text/javascript, application/javascript, application/json,application/xml,application/octet-stream,application/force-download
+    min-response-size: 20
+
+com:
+  report:
+    url: C:/project_file/
+
+
+spring:
+  thymeleaf:
+    encoding: UTF-8
+    cache: false
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:33306/project-manage?useSSL=false&serverTimezone=UTC&characterEncoding=utf-8
+    username: root
+    password: root@
+
+  redis:
+    host: localhost #redis服务
+    port: 6379
+    database: 1
+    password:
+
+mybatis-plus:
+  tenant-enable: ture
+  mapper-locations: classpath:/mapper/*Mapper.xml
+
+
+
+logging:
+  level:
+    com.project.manage.mapper: debug
+
+#logging.level.org.springframework.security: DEBUG

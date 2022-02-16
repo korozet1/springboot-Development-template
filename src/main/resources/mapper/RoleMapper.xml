@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, lengleng All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: lengleng (wangiegie@gmail.com)
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.korozet.zet.mapper.RoleMapper">
+
+  <resultMap id="roleMap" type="com.korozet.zet.entity.Role">
+                  <id property="id" column="id"/>
+                        <result property="name" column="name"/>
+            </resultMap>
+
+    <resultMap id="roleInfoMap" type="com.korozet.zet.vo.RoleInfoVO">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <collection property="menus" ofType="com.korozet.zet.vo.MenuVO">
+            <result column="url" property="url" />
+            <result column="menu_name" property="menuName"></result>
+            <result column="icon" property="icon"></result>
+            <result column="sort" property="sort"></result>
+            <result column="parent_id" property="parentId"></result>
+            <result column="menu_id" property="menuId"></result>
+        </collection>
+    </resultMap>
+    <select id="getRoleInfoById" resultMap="roleInfoMap">
+        SELECT
+            sr.id,
+            sr.`name`,
+            sm.id AS menu_id,
+            sm.parent_id,
+            sm.menu_name,
+            sm.icon,
+            sm.sort,
+            sm.url
+        FROM
+            sys_role sr
+            LEFT JOIN sys_role_menu srm ON srm.role_id = sr.id
+            LEFT JOIN sys_menu sm ON sm.id = srm.permission_id
+        <where>
+            <if test="id!=null">
+                and sr.id=#{id}
+            </if>
+        </where>
+
+
+    </select>
+</mapper>

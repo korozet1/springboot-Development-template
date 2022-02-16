@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, lengleng All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: lengleng (wangiegie@gmail.com)
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.korozet.zet.mapper.LogMapper">
+
+  <resultMap id="logMap" type="com.korozet.zet.entity.Log">
+                  <id property="id" column="id"/>
+                        <result property="requestUser" column="request_user"/>
+                        <result property="time" column="time"/>
+                        <result property="requestUri" column="request_uri"/>
+                        <result property="title" column="title"/>
+                        <result property="params" column="params"/>
+                        <result property="requestIp" column="request_ip"/>
+                        <result property="userAgent" column="user_agent"/>
+                        <result property="method" column="method"/>
+                        <result property="type" column="type"/>
+                        <result property="exception" column="exception"/>
+<!--                        <result property="platform_name" column="platformName"/>-->
+            </resultMap>
+    <select id="getLogPage" resultMap="logMap">
+        SELECT
+        s.*,tp.platform_name
+        FROM
+        sys_log s
+        left JOIN t_platform tp on tp.id=s.request_platform
+        <where>
+            <if test="log.startTime!=null">
+                and create_time&gt;=#{log.startTime}
+            </if>
+            <if test="log.endTime!=null">
+                and create_time&lt;=#{log.endTime}
+            </if>
+            <if test="log.requestUser!=null and log.requestUser!=''">
+                and request_user=#{log.requestUser}
+            </if>
+            <if test="log.requestPlatform!=null">
+                and request_platform=#{log.requestPlatform}
+            </if>
+            <if test="log.title!=null and log.title!=''">
+                and title like concat('%',#{log.title},'%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+</mapper>

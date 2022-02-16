@@ -1,0 +1,56 @@
+server:
+  port: 7777
+  servlet:
+    context-path: /korozet
+
+  ############################开启文件压缩##########################
+compression:
+  enabled: true
+  mime-types: text/html, text/xml, text/plain,text/css, text/javascript, application/javascript, application/json,application/xml,application/octet-stream,application/force-download
+  min-response-size: 20
+
+com:
+  report:
+    url: D:/tourWord/ #报表存放路径
+
+view:
+  test:
+    id: 2333
+
+spring:
+  thymeleaf:
+    encoding: UTF-8
+    cache: false
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/portal?useSSL=false&serverTimezone=UTC&characterEncoding=utf-8
+    username: root
+    password: root
+#    url: jdbc:mysql://192.168.1.238:3306/project_manage?useSSL=false&serverTimezone=UTC&characterEncoding=utf-8
+#    username: root
+#    password: SafetyMysql2020
+
+  redis:
+    host: 192.168.1.233 #redis服务
+    port: 6379
+
+    password:
+
+mybatis-plus:
+  tenant-enable: ture
+  mapper-locations: classpath:/mapper/*Mapper.xml
+
+
+#  #海康摄像头
+#host: 182.247.12.2:1443             # artemis网关服务器ip端口
+#appKey: 20177381                  # 秘钥appkey
+#appSecret: XRgBCxVkuQV7SUs9VSun   # 秘钥appSecret
+
+
+logging:
+  level:
+    com.korozet.zet.mapper: debug
+
+
+#logging.level.org.springframework.security: DEBUG

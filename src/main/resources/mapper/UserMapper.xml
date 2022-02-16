@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~
+  ~      Copyright (c) 2018-2025, lengleng All rights reserved.
+  ~
+  ~  Redistribution and use in source and binary forms, with or without
+  ~  modification, are permitted provided that the following conditions are met:
+  ~
+  ~ Redistributions of source code must retain the above copyright notice,
+  ~  this list of conditions and the following disclaimer.
+  ~  Redistributions in binary form must reproduce the above copyright
+  ~  notice, this list of conditions and the following disclaimer in the
+  ~  documentation and/or other materials provided with the distribution.
+  ~  Neither the name of the pig4cloud.com developer nor the names of its
+  ~  contributors may be used to endorse or promote products derived from
+  ~  this software without specific prior written permission.
+  ~  Author: lengleng (wangiegie@gmail.com)
+  ~
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.korozet.zet.mapper.UserMapper">
+
+  <resultMap id="userMap" type="com.korozet.zet.entity.User">
+                  <id property="id" column="id"/>
+                        <result property="username" column="username"/>
+                        <result property="password" column="password"/>
+                        <result property="nickName" column="nick_name"/>
+                        <result property="createTime" column="create_time"/>
+                        <result property="status" column="status"/>
+                        <result property="mobilePhone" column="mobile_phone"/>
+            </resultMap>
+
+    <resultMap id="securityUserVOMap" type="com.korozet.zet.vo.SecurityUserVO">
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="mobilePhone" column="mobile_phone"/>
+        <result property="nickName" column="nick_name"/>
+        <collection property="menus" ofType="com.korozet.zet.vo.MenuVO">
+            <result column="url" property="url" />
+            <result column="menu_name" property="menuName"></result>
+            <result column="icon" property="icon"></result>
+            <result column="sort" property="sort"></result>
+            <result column="parent_id" property="parentId"></result>
+            <result column="menu_id" property="menuId"></result>
+        </collection>
+    </resultMap>
+
+    <resultMap id="UserVOMap" type="com.korozet.zet.vo.UserVO">
+        <result property="username" column="username"/>
+        <result property="mobilePhone" column="mobile_phone"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="id" column="id"/>
+        <result property="roleName" column="roleName"/>
+        <result property="roleId" column="role_id"/>
+        <collection property="menus" ofType="com.korozet.zet.vo.MenuVO">
+            <result column="url" property="url" />
+            <result column="menu_name" property="menuName"></result>
+            <result column="icon" property="icon"></result>
+            <result column="sort" property="sort"></result>
+            <result column="parent_id" property="parentId"></result>
+            <result column="menu_id" property="menuId"></result>
+        </collection>
+    </resultMap>
+    <select id="getUserByName" resultMap="securityUserVOMap">
+        SELECT
+            su.*,
+            sm.url,
+            sm.menu_name AS menu_name,
+            sm.icon,
+            sm.sort,
+            sm.parent_id,
+            sm.id as menu_id
+        FROM
+            sys_user su
+            LEFT JOIN sys_user_role sur ON sur.user_id = su.id
+            LEFT JOIN sys_role sr ON sr.id = sur.role_id
+            LEFT JOIN sys_role_menu srm ON srm.role_id = sr.id
+            LEFT JOIN sys_menu sm ON sm.id = srm.permission_id
+        <where>
+            <if test="userName!=null">
+                and su.username=#{userName}
+            </if>
+            and del=0
+        </where>
+    </select>
+    <select id="getUserInfoById" resultMap="UserVOMap">
+        SELECT
+            su.*,
+            sm.url,
+            sm.menu_name AS menu_name,
+            sm.icon,
+            sm.sort,
+            sm.parent_id,
+            sm.id as menu_id,
+            sr.name as  roleName,
+            sur.role_id
+        FROM
+            sys_user su
+            LEFT JOIN sys_user_role sur ON sur.user_id = su.id
+            LEFT JOIN sys_role sr ON sr.id = sur.role_id
+            LEFT JOIN sys_role_menu srm ON srm.role_id = sr.id
+            LEFT JOIN sys_menu sm ON sm.id = srm.permission_id
+        <where>
+            <if test="id!=null">
+                and su.id=#{id}
+            </if>
+                and su.status=0
+        </where>
+--         GROUP BY sm.id
+    </select>
+    <select id="getUserByPage" resultType="com.korozet.zet.vo.UserPageVO">
+        select su.username,
+        su.nick_name as nickName,
+        su.id,
+        su.create_time as createTime,
+        su.status,
+        su.mobile_phone as mobilePhone,
+        sr.id as roleId,
+        sr.name as roleName
+        from sys_user su
+        left join sys_user_role sur on sur.user_id=su.id
+        left join sys_role sr on sr.id=sur.role_id
+        <where>
+            <if test="userPageDTO.roleId!=null">
+                and sr.id=#{userPageDTO.roleId}
+            </if>
+            <if test="userPageDTO.findField!=null and userPageDTO.findField!=''">
+                and (su.nick_name like concat('%',#{userPageDTO.findField},'%')
+                    or su.username like concat('%',#{userPageDTO.findField},'%')
+                )
+            </if>
+        </where>
+    </select>
+    <select id="getUserInfo" resultType="com.korozet.zet.vo.UserInfoVO">
+        SELECT
+           su.id,su.mobile_phone as mobilePhone,su.nick_name as nickName,su.username,
+           su.status,sur.role_id as roleId
+        FROM
+            sys_user su
+            LEFT JOIN sys_user_role sur ON sur.user_id = su.id
+        <where>
+            and su.id=#{id}
+        </where>
+    </select>
+
+
+</mapper>
